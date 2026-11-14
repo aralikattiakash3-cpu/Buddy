@@ -1,0 +1,25 @@
+{
+  "name": "krishimitra-ai",
+  "version": "1.0.0",
+  "description": "KrishiMitra AI - Intelligent Multilingual Agriculture Assistant for Indian Farmers",
+  "private": true,
+  "scripts": {
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "build": "npm run build:server && npm run build:client",
+    "test": "npm --prefix server test"
+  },
+  "keywords": [
+    "agriculture",
+    "ai",
+    "farmers",
+    "gemini",
+    "kannada",
+    "hindi",
+    "crop-health"
+  ],
+  "author": "KrishiMitra Team",
+  "license": "MIT"
+}

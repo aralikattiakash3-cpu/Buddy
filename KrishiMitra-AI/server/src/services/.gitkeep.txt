@@ -1,0 +1,63 @@
+
+import { GoogleGenAI } from "@google/genai";
+
+const getGeminiClient = () => {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        throw new Error("GEMINI_API_KEY is missing in server/.env");
+    }
+
+    return new GoogleGenAI({ apiKey });
+};
+
+export async function analyzePlantImage(
+    imageBuffer: Buffer,
+    mimeType: string,
+    cropName = "",
+    symptoms = ""
+) {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(mimeType)) {
+        throw new Error("Unsupported image format");
+    }
+
+    const ai = getGeminiClient();
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [
+            {
+                inlineData: {
+                    mimeType,
+                    data: imageBuffer.toString("base64"),
+                },
+            },
+            {
+                text: `You are KrishiMitra AI, an agricultural advisory assistant.
+
+Analyze this plant image carefully.
+
+Crop name: ${cropName || "Unknown"}
+Observed symptoms: ${symptoms || "Not provided"}
+
+Respond with:
+1. Visible plant symptoms
+2. Possible diseases or causes
+3. Confidence level (low, medium, or high)
+4. Safe, practical next steps
+5. Prevention suggestions
+6. When to consult an agricultural expert
+
+Do not claim a certain diagnosis from an image alone.
+Do not provide hazardous pesticide mixing instructions or doses.
+If the image does not clearly show a plant, say so.
+Use clear, farmer-friendly English.`,
+            },
+        ],
+    });
+
+    return response.text ?? "No analysis was generated.";
+}
+
